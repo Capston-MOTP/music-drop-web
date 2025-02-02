@@ -1,0 +1,146 @@
+.song-detail-container {
+  padding: 16px;
+  background-color: #000;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  position: relative;
+}
+
+.header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.song-detail-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 40px;
+  width: 100%;
+}
+
+.album-cover-large {
+  width: 100%;
+  max-width: 240px;
+  height: 240px;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.album-cover-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.song-info-detail {
+  text-align: center;
+  margin-bottom: 40px;
+  width: 100%;
+  max-width: 240px;
+}
+
+.song-info-detail .song-title {
+  font-size: 24px;
+  margin: 0 0 8px 0;
+}
+
+.song-info-detail .song-artist {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.drop-message {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.drop-message p {
+  font-size: 18px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.message-input-container {
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.message-input {
+  width: 100%;
+  min-height: 100px;
+  padding: 16px;
+  background-color: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+}
+
+.message-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.message-input:focus {
+  border-color: #2DD4BF;
+}
+
+.character-count {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.drop-button {
+  width: 100%;
+  max-width: 340px;
+  padding: 16px;
+  border-radius: 25px;
+  background-color: #2DD4BF;
+  color: #000;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.drop-button:hover {
+  background-color: #26c0ad;
+}
+
+.clear-button {
+  position: absolute;
+  top: 10px;
+  right: 0px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.clear-button:hover {
+  color: rgba(255, 255, 255, 0.5);
+} 

@@ -25,10 +25,10 @@ body, #root {
 }
 
 .search-container {
-  color: white;
-  padding: 20px;
-  height: 100%;
-  box-sizing: border-box;
+  padding: 16px;
+  background-color: #000;
+  min-height: 100vh;
+  color: #fff;
 }
 
 .search-header {
