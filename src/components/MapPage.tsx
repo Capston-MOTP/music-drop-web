@@ -1,4 +1,4 @@
-import { CustomOverlayMap, Map } from "react-kakao-maps-sdk";
+import { CustomOverlayMap, Map, useKakaoLoader } from "react-kakao-maps-sdk";
 import SvgIconLocationActive40 from "../assets/icons/locationActive";
 import SvgIconLocation40 from "../assets/icons/IocationInactive";
 import { useEffect, useRef, useState } from "react";
@@ -56,10 +56,13 @@ interface Position {
 }
 
 const MapPage = () => {
+  useKakaoLoader({
+    appkey: "1439a0da769c13dde3cf12b07193dbdc",
+  });
   const mapRef = useRef<kakao.maps.Map>(null);
   const [center, setCenter] = useState<Position>({
-    lat: 33.5563,
-    lng: 126.79581,
+    lat: 37.3726,
+    lng: 126.6352,
   });
 
   const handleCenterChange = (center: Position) => {
@@ -168,27 +171,6 @@ const MapPage = () => {
     }
   };
 
-  // 지도 이동 시 GPS 비활성화
-  useEffect(() => {
-    if (!mapRef.current) return;
-
-    const map = mapRef.current;
-    const handleIdle = () => {
-      setTimeout(() => {
-        if (!isGpsMarkerClicked.current) {
-          setIsGpsActive(false);
-          setMyPosition(null);
-        }
-      }, 20);
-    };
-
-    kakao.maps.event.addListener(map, "idle", handleIdle);
-
-    return () => {
-      kakao.maps.event.removeListener(map, "idle", handleIdle);
-    };
-  }, [mapRef.current]);
-
   // 컴포넌트 언마운트 시 위치 추적 중지
   useEffect(() => {
     return () => {
@@ -196,14 +178,19 @@ const MapPage = () => {
     };
   }, []);
 
+  console.log(center);
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <Map
-        center={center}
+        center={{
+          lat: center.lat,
+          lng: center.lng,
+        }}
         style={{ width: "100%", height: "100%" }}
+        isPanto={true}
         level={4}
-        minLevel={10}
-        maxLevel={3}
+        minLevel={12}
+        maxLevel={2}
       >
         {MOCK_DATA.map((data) => (
           <CustomOverlayMap
