@@ -60,14 +60,11 @@ const MapPage = () => {
     appkey: "1439a0da769c13dde3cf12b07193dbdc",
   });
   const mapRef = useRef<kakao.maps.Map>(null);
-  const [center, setCenter] = useState<Position>({
+  const [center] = useState<Position>({
     lat: 37.3726,
     lng: 126.6352,
   });
 
-  const handleCenterChange = (center: Position) => {
-    setCenter(center);
-  };
   const [isGpsActive, setIsGpsActive] = useState(false);
   const [myPosition, setMyPosition] = useState<Position | null>(null);
   const isGpsMarkerClicked = useRef<boolean>(false);
@@ -157,7 +154,7 @@ const MapPage = () => {
           mapRef.current.setCenter(
             new kakao.maps.LatLng(position.lat, position.lng)
           );
-          handleCenterChange(position);
+
           setTimeout(() => {
             isGpsMarkerClicked.current = false;
           }, 300);
@@ -178,7 +175,6 @@ const MapPage = () => {
     };
   }, []);
 
-  console.log(center);
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <Map
@@ -191,6 +187,7 @@ const MapPage = () => {
         level={4}
         minLevel={12}
         maxLevel={2}
+        ref={mapRef}
       >
         {MOCK_DATA.map((data) => (
           <CustomOverlayMap

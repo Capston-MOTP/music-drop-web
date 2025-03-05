@@ -33,7 +33,7 @@ export const requestPermission = () => {
     }) as EventListener;
 
     document.addEventListener("PERMISSION_RESPONSE", listener);
-    console.log("requestPermission");
+
     postMessage({
       type: "PERMISSION_REQUEST",
     });
