@@ -58,6 +58,7 @@ interface Position {
 const MapPage = () => {
   useKakaoLoader({
     appkey: "1439a0da769c13dde3cf12b07193dbdc",
+    libraries: ["services"],
   });
   const mapRef = useRef<kakao.maps.Map>(null);
   const [center] = useState<Position>({
@@ -69,6 +70,7 @@ const MapPage = () => {
   const [myPosition, setMyPosition] = useState<Position | null>(null);
   const isGpsMarkerClicked = useRef<boolean>(false);
   const watchId = useRef<number | null>(null);
+  const [currentAddr, setCurrentAddr] = useState<string>("");
 
   const getCurrentPosition = () => {
     return new Promise<Position>((resolve, reject) => {
@@ -168,6 +170,19 @@ const MapPage = () => {
     }
   };
 
+  const searchAddrFromCoords = (coords: Position) => {
+    if (!kakao || !kakao.maps) return;
+
+    const geocoder = new kakao.maps.services.Geocoder();
+    geocoder.coord2RegionCode(coords.lng, coords.lat, (result, status) => {
+      if (status === kakao.maps.services.Status.OK) {
+        // 법정동 마지막 문자열에서 '동' 제외
+        const address = result[0].address_name;
+        setCurrentAddr(address);
+      }
+    });
+  };
+
   // 컴포넌트 언마운트 시 위치 추적 중지
   useEffect(() => {
     return () => {
@@ -176,7 +191,7 @@ const MapPage = () => {
   }, []);
 
   return (
-    <div style={{ width: "100%", height: "100vh" }}>
+    <div style={{ width: "100%", height: "100vh", position: "relative" }}>
       <Map
         center={{
           lat: center.lat,
@@ -188,6 +203,24 @@ const MapPage = () => {
         minLevel={12}
         maxLevel={2}
         ref={mapRef}
+        onIdle={() => {
+          const handleIdle = () => {
+            const center = mapRef.current?.getCenter();
+            const coords = {
+              lat: center?.getLat(),
+              lng: center?.getLng(),
+            };
+
+            searchAddrFromCoords(coords as Position);
+            setTimeout(() => {
+              if (!isGpsMarkerClicked.current) {
+                setIsGpsActive(false);
+                setMyPosition(null);
+              }
+            }, 20);
+          };
+          handleIdle();
+        }}
       >
         {MOCK_DATA.map((data) => (
           <CustomOverlayMap
@@ -235,13 +268,17 @@ const MapPage = () => {
                 <div
                   style={{
                     position: "absolute",
-                    width: "30px",
-                    height: "30px",
+                    width: "40px",
+                    height: "40px",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
                     borderRadius: "50%",
                     backgroundColor: "#22CA72",
                     opacity: 0.2,
                   }}
                 />
+
                 <div
                   style={{
                     position: "absolute",
@@ -260,6 +297,76 @@ const MapPage = () => {
           </CustomOverlayMap>
         )}
       </Map>
+      {/* Location display at top */}
+      <div
+        style={{
+          position: "absolute",
+          top: 16,
+          left: "50%",
+          transform: "translateX(-50%)",
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
+          borderRadius: "20px",
+          padding: "8px 16px",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          zIndex: 3,
+          maxWidth: "80%",
+        }}
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+            fill="#ffffff"
+          />
+        </svg>
+        <span
+          style={{
+            color: "#ffffff",
+            fontSize: "14px",
+            fontWeight: 500,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {currentAddr || "위치 정보 없음"}
+        </span>
+      </div>
+      {/* Top gradient overlay */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "120px",
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%)",
+          pointerEvents: "none",
+          zIndex: 2,
+        }}
+      />
+      {/* Bottom gradient overlay */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "120px",
+          background:
+            "linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%)",
+          pointerEvents: "none",
+          zIndex: 2,
+        }}
+      />
       <div>
         <button
           style={{
