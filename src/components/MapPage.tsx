@@ -1,4 +1,8 @@
 import { CustomOverlayMap, Map } from "react-kakao-maps-sdk";
+import SvgIconLocationActive40 from "../assets/icons/locationActive";
+import SvgIconLocation40 from "../assets/icons/IocationInactive";
+import { useRef } from "react";
+import { useGps } from "../hooks/useGps";
 
 const MOCK_DATA = [
   {
@@ -46,6 +50,8 @@ const MOCK_DATA = [
 ];
 
 const MapPage = () => {
+  const mapRef = useRef<kakao.maps.Map>(null);
+  const { isGpsActive, myPosition, handleGpsClick } = useGps(mapRef);
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <Map
@@ -56,7 +62,6 @@ const MapPage = () => {
         maxLevel={3}
       >
         {MOCK_DATA.map((data) => (
-          //  동그랗고 아래에 꼭지점이 있는 형태의 마커
           <CustomOverlayMap
             position={{ lat: data.lat, lng: data.lng }}
             key={data.id}
@@ -79,17 +84,60 @@ const MapPage = () => {
                 height: 0,
                 borderLeft: "6px solid transparent",
                 borderRight: "6px solid transparent",
-                borderTop: "6px solid #ffffff", // Change color as needed
+                borderTop: "6px solid #ffffff",
                 position: "absolute",
                 left: "50%",
-                bottom: "-4px", // Adjust position as needed
+                bottom: "-4px",
                 transform: "translateX(-50%)",
                 zIndex: 99,
               }}
             />
           </CustomOverlayMap>
         ))}
+        {myPosition && (
+          <CustomOverlayMap position={myPosition}>
+            <div
+              style={{
+                width: "24px",
+                height: "24px",
+                borderRadius: "100%",
+                backgroundColor: "#3182F7",
+                border: "2px solid #ffffff",
+                zIndex: 101,
+              }}
+            />
+          </CustomOverlayMap>
+        )}
       </Map>
+      <div>
+        <button
+          style={{
+            position: "absolute",
+            bottom: 24,
+            right: 24,
+            zIndex: 100,
+            width: "48px",
+            height: "48px",
+            borderRadius: "50%",
+            backgroundColor: "#ffffff",
+            border: "none",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "transform 0.2s ease",
+            padding: 0,
+          }}
+          onClick={handleGpsClick}
+        >
+          {isGpsActive ? (
+            <SvgIconLocationActive40 width={46} height={46} />
+          ) : (
+            <SvgIconLocation40 width={46} height={46} />
+          )}
+        </button>
+      </div>
     </div>
   );
 };
