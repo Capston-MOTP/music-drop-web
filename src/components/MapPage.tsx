@@ -96,16 +96,39 @@ const MapPage = () => {
         ))}
         {myPosition && (
           <CustomOverlayMap position={myPosition}>
-            <div
-              style={{
-                width: "24px",
-                height: "24px",
-                borderRadius: "100%",
-                backgroundColor: "#3182F7",
-                border: "2px solid #ffffff",
-                zIndex: 101,
-              }}
-            />
+            <div style={{ position: "relative" }}>
+              <div
+                style={{
+                  width: "30px",
+                  height: "30px",
+                  position: "relative",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "50%",
+                    backgroundColor: "#22CA72",
+                    opacity: 0.2,
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    width: "14px",
+                    height: "14px",
+                    borderRadius: "50%",
+                    backgroundColor: "#22CA72",
+                    border: "2px solid white",
+                  }}
+                />
+              </div>
+            </div>
           </CustomOverlayMap>
         )}
       </Map>

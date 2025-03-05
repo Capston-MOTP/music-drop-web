@@ -81,6 +81,7 @@ export const useGps = (mapRef: React.RefObject<kakao.maps.Map>) => {
       if (isGpsActive) {
         setIsGpsActive(false);
         stopWatchingPosition();
+        setMyPosition(null);
         return;
       }
 
@@ -118,6 +119,7 @@ export const useGps = (mapRef: React.RefObject<kakao.maps.Map>) => {
       setTimeout(() => {
         if (!isGpsMarkerClicked.current) {
           setIsGpsActive(false);
+          setMyPosition(null);
         }
       }, 20);
     };
