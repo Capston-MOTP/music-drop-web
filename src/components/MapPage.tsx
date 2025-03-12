@@ -227,12 +227,6 @@ const MapPage = () => {
             };
 
             searchAddrFromCoords(coords as Position);
-            setTimeout(() => {
-              if (!isGpsMarkerClicked.current) {
-                setIsGpsActive(false);
-                setMyPosition(null);
-              }
-            }, 20);
           };
           handleIdle();
         }}
