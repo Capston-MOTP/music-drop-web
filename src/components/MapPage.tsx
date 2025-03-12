@@ -214,7 +214,6 @@ const MapPage = () => {
         style={{ width: "100%", height: "100%" }}
         isPanto={true}
         level={4}
-        minLevel={12}
         maxLevel={2}
         ref={mapRef}
         onClick={() => setSelectedMarker(null)}
@@ -239,12 +238,30 @@ const MapPage = () => {
             >
               <div
                 style={{
-                  width: "24px",
-                  height: "24px",
+                  width: selectedMarker?.id === data.id ? "32px" : "24px",
+                  height: selectedMarker?.id === data.id ? "32px" : "24px",
                   borderRadius: "100%",
                   overflow: "hidden",
-                  border: "2px solid #ffffff",
-                  zIndex: 100,
+                  border: `2px solid ${
+                    selectedMarker?.id === data.id ? "#191919" : "#ffffff"
+                  }`,
+                  zIndex: selectedMarker?.id === data.id ? 101 : 100,
+                  background:
+                    selectedMarker?.id === data.id
+                      ? "linear-gradient(180deg, #ffffff 0%, #abfbff 100%)"
+                      : "#abfbff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transform: `scale(${
+                    selectedMarker?.id === data.id ? 1.1 : 1
+                  })`,
+                  transition: "all 0.2s ease",
+                  cursor: "pointer",
+                  boxShadow:
+                    selectedMarker?.id === data.id
+                      ? "0 2px 8px rgba(0,0,0,0.1)"
+                      : "none",
                 }}
                 onClick={() => {
                   setSelectedMarker({
@@ -258,14 +275,24 @@ const MapPage = () => {
                   });
                 }}
               >
-                {/* <img src={data.img} width="24px" height="24px" alt="" /> */}
-                <div
-                  style={{
-                    width: "24px",
-                    height: "24px",
-                    backgroundColor: "red",
-                  }}
-                />
+                <svg
+                  width={selectedMarker?.id === data.id ? "16" : "12"}
+                  height={selectedMarker?.id === data.id ? "16" : "12"}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 18.85C8 20.59 9.28 22 10.85 22C12.42 22 13.7 20.59 13.7 18.85C13.7 17.11 12.42 15.7 10.85 15.7C9.28 15.7 8 17.11 8 18.85Z"
+                    fill="#2b2b2b"
+                  />
+                  <path
+                    d="M13.7 18.85V4C13.7 3.45 14.15 3 14.7 3C14.92 3 15.13 3.08 15.3 3.22L19.7 6.9"
+                    stroke="#2b2b2b"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
               </div>
               <div
                 style={{
@@ -273,12 +300,14 @@ const MapPage = () => {
                   height: 0,
                   borderLeft: "6px solid transparent",
                   borderRight: "6px solid transparent",
-                  borderTop: "6px solid #ffffff",
+                  borderTop: `6px solid ${
+                    selectedMarker?.id === data.id ? "#191919" : "#ffffff"
+                  }`,
                   position: "absolute",
                   left: "50%",
-                  bottom: "-4px",
+                  bottom: selectedMarker?.id === data.id ? "-6px" : "-4px",
                   transform: "translateX(-50%)",
-                  zIndex: 99,
+                  zIndex: selectedMarker?.id === data.id ? 101 : 99,
                 }}
               />
             </CustomOverlayMap>
@@ -520,20 +549,6 @@ const MapPage = () => {
                 }}
                 disabled={!isGpsActive}
               >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12 4V20M20 12L4 12"
-                    stroke={isGpsActive ? "#2b2b2b" : "#999999"}
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
                 뮤직 드랍하기
               </button>
             </div>
