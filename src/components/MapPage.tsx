@@ -4,51 +4,8 @@ import SvgIconLocation40 from "../assets/icons/IocationInactive";
 import { useEffect, useRef, useState } from "react";
 
 import { requestPermission } from "../utils/webviewBridge";
-
-const MOCK_DATA = [
-  {
-    lat: 33.55635,
-    lng: 126.795841,
-    id: 1,
-    img: "https://picsum.photos/200/300",
-  },
-  {
-    lat: 33.53635,
-    lng: 126.795841,
-    id: 2,
-    img: "https://picsum.photos/200/300",
-  },
-  {
-    lat: 33.54635,
-    lng: 126.795841,
-    id: 3,
-    img: "https://picsum.photos/200/300",
-  },
-  {
-    lat: 33.57635,
-    lng: 126.795841,
-    id: 4,
-    img: "https://picsum.photos/200/300",
-  },
-  {
-    lat: 33.59635,
-    lng: 126.795841,
-    id: 5,
-    img: "https://picsum.photos/200/300",
-  },
-  {
-    lat: 33.58635,
-    lng: 126.795841,
-    id: 6,
-    img: "https://picsum.photos/200/300",
-  },
-  {
-    lat: 33.65635,
-    lng: 126.795841,
-    id: 7,
-    img: "https://picsum.photos/200/300",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import apiClient from "../utils/api/client";
 
 interface Position {
   lat: number;
@@ -65,6 +22,33 @@ const MapPage = () => {
     lat: 37.3726,
     lng: 126.6352,
   });
+  const [selectedMarker, setSelectedMarker] = useState<{
+    id: number;
+    latitude: number;
+    longitude: number;
+    songName: string;
+    trackId: string;
+    comment: string;
+    albumCoverUrl: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!selectedMarker || selectedMarker.albumCoverUrl) return;
+    const fetchTrack = async () => {
+      try {
+        const data = await apiClient.get(
+          `/api/songs/${selectedMarker.trackId}`
+        );
+        setSelectedMarker({
+          ...selectedMarker,
+          albumCoverUrl: data.data.albumCoverUrl,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchTrack();
+  }, [selectedMarker]);
 
   const [isGpsActive, setIsGpsActive] = useState(false);
   const [myPosition, setMyPosition] = useState<Position | null>(null);
@@ -190,6 +174,36 @@ const MapPage = () => {
     };
   }, []);
 
+  const { data: markerList } = useQuery({
+    queryKey: ["marker-list"],
+    queryFn: () => {
+      return apiClient.get<
+        {
+          comment: string;
+          dropDate: string;
+          id: number;
+          latitude: number;
+          likes: number;
+          longitude: number;
+          songName: string;
+          trackId: string;
+        }[]
+      >("/api/markers");
+    },
+  });
+
+  // const { data: geoInfo } = useQuery({
+  //   queryKey: ["geo-info"],
+  //   queryFn: () => {
+  //     return apiClient.get("/api/geo-info", {
+  //       params: {
+  //         lat: 37.3726,
+  //         lng: 126.6352,
+  //       },
+  //     });
+  //   },
+  // });
+
   return (
     <div style={{ width: "100%", height: "100vh", position: "relative" }}>
       <Map
@@ -203,6 +217,7 @@ const MapPage = () => {
         minLevel={12}
         maxLevel={2}
         ref={mapRef}
+        onClick={() => setSelectedMarker(null)}
         onIdle={() => {
           const handleIdle = () => {
             const center = mapRef.current?.getCenter();
@@ -222,39 +237,58 @@ const MapPage = () => {
           handleIdle();
         }}
       >
-        {MOCK_DATA.map((data) => (
-          <CustomOverlayMap
-            position={{ lat: data.lat, lng: data.lng }}
-            key={data.id}
-          >
-            <div
-              style={{
-                width: "24px",
-                height: "24px",
-                borderRadius: "100%",
-                overflow: "hidden",
-                border: "2px solid #ffffff",
-                zIndex: 100,
-              }}
+        {markerList &&
+          markerList.data.map((data) => (
+            <CustomOverlayMap
+              position={{ lat: data.latitude, lng: data.longitude }}
+              key={data.id}
             >
-              <img src={data.img} width="24px" height="24px" alt="" />
-            </div>
-            <div
-              style={{
-                width: 0,
-                height: 0,
-                borderLeft: "6px solid transparent",
-                borderRight: "6px solid transparent",
-                borderTop: "6px solid #ffffff",
-                position: "absolute",
-                left: "50%",
-                bottom: "-4px",
-                transform: "translateX(-50%)",
-                zIndex: 99,
-              }}
-            />
-          </CustomOverlayMap>
-        ))}
+              <div
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "100%",
+                  overflow: "hidden",
+                  border: "2px solid #ffffff",
+                  zIndex: 100,
+                }}
+                onClick={() => {
+                  setSelectedMarker({
+                    id: data.id,
+                    latitude: data.latitude,
+                    longitude: data.longitude,
+                    songName: data.songName,
+                    trackId: data.trackId,
+                    comment: data.comment,
+                    albumCoverUrl: "",
+                  });
+                }}
+              >
+                {/* <img src={data.img} width="24px" height="24px" alt="" /> */}
+                <div
+                  style={{
+                    width: "24px",
+                    height: "24px",
+                    backgroundColor: "red",
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  width: 0,
+                  height: 0,
+                  borderLeft: "6px solid transparent",
+                  borderRight: "6px solid transparent",
+                  borderTop: "6px solid #ffffff",
+                  position: "absolute",
+                  left: "50%",
+                  bottom: "-4px",
+                  transform: "translateX(-50%)",
+                  zIndex: 99,
+                }}
+              />
+            </CustomOverlayMap>
+          ))}
         {myPosition && (
           <CustomOverlayMap position={myPosition}>
             <div style={{ position: "relative" }}>
@@ -360,7 +394,7 @@ const MapPage = () => {
           bottom: 0,
           left: 0,
           right: 0,
-          height: "120px",
+          height: "240px",
           background:
             "linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%)",
           pointerEvents: "none",
@@ -368,6 +402,149 @@ const MapPage = () => {
         }}
       />
       <div>
+        <div>
+          {selectedMarker ? (
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                transform: "translate(-50%)",
+                bottom: "20px",
+                width: "180px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                zIndex: 100,
+                gap: "8px",
+              }}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  marginBottom: "4px",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "11px",
+                    color: "#2b2b2b",
+                    position: "relative",
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                    padding: "4px 8px",
+                    backgroundColor: "#abfbff",
+                    borderRadius: "12px",
+                    overflow: "visible",
+                  }}
+                >
+                  {selectedMarker.comment}
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "-6px",
+                      width: "12px",
+                      height: "12px",
+                      left: "50%",
+                      transform: "translate(-50%, 0) rotate(45deg)",
+                      backgroundColor: "#abfbff",
+                    }}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  border: "2px solid rgba(0, 0, 0, 0.15)",
+                }}
+              >
+                <img
+                  src={selectedMarker.albumCoverUrl || "placeholder-image-url"}
+                  alt={selectedMarker.songName}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    color: "white",
+                    padding: "0 4px",
+                  }}
+                >
+                  {selectedMarker.songName}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                transform: "translateX(-50%)",
+                bottom: "24px",
+                zIndex: 100,
+              }}
+            >
+              <button
+                style={{
+                  backgroundColor: isGpsActive ? "#abfbff" : "#e0e0e0",
+                  borderRadius: "100px",
+                  padding: "12px 24px",
+                  border: "none",
+                  color: isGpsActive ? "#2b2b2b" : "#999999",
+                  fontSize: "15px",
+                  fontWeight: "600",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  cursor: isGpsActive ? "pointer" : "default",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                  opacity: isGpsActive ? 1 : 0.7,
+                  transition: "all 0.2s ease",
+                }}
+                onClick={() => {
+                  if (!isGpsActive) return;
+                  // TODO: 뮤직 드랍 기능 구현
+                }}
+                disabled={!isGpsActive}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 4V20M20 12L4 12"
+                    stroke={isGpsActive ? "#2b2b2b" : "#999999"}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                뮤직 드랍하기
+              </button>
+            </div>
+          )}
+        </div>
         <button
           style={{
             position: "absolute",

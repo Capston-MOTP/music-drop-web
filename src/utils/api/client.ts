@@ -1,14 +1,10 @@
 import axios, { AxiosError } from "axios";
 
-const authApiClient = axios.create({
+const apiClient = axios.create({
   baseURL: import.meta.env.VITE_APP_API_URL,
 });
 
-export const nonAuthApiClient = axios.create({
-  baseURL: import.meta.env.VITE_APP_API_URL,
-});
-
-authApiClient.interceptors.request.use(
+apiClient.interceptors.request.use(
   (config) => {
     return config;
   },
@@ -17,9 +13,9 @@ authApiClient.interceptors.request.use(
   }
 );
 
-authApiClient.interceptors.response.use(
+apiClient.interceptors.response.use(
   (response) => {
-    return response;
+    return response; // 데이터만 반환
   },
 
   async (error: AxiosError) => {
@@ -35,4 +31,4 @@ authApiClient.interceptors.response.use(
   }
 );
 
-export default authApiClient;
+export default apiClient;
