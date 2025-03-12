@@ -1,72 +1,31 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import './common.css';
 import './SearchResultPage.css';
 import backArrow from '../assets/back_space.svg'
+import firstCover from '../assets/1.jpg'; // 임시 앨범 커버 이미지
 
-import firstCover from '../assets/1.jpg'; //임시 조치 , 나중에 api로 받아오면 바꿔줘야 함
-import secondCover from '../assets/2.jpg'; //임시 조치 , 나중에 api로 받아오면 바꿔줘야 함
-import thirdCover from '../assets/3.jpg'; //임시 조치 , 나중에 api로 받아오면 바꿔줘야 함
-import fourthCover from '../assets/4.jpg'; //임시 조치 , 나중에 api로 받아오면 바꿔줘야 함
-import fifthCover from '../assets/5.jpg'; //임시 조치 , 나중에 api로 받아오면 바꿔줘야 함
-import sixthCover from '../assets/6.jpg'; //임시 조치 , 나중에 api로 받아오면 바꿔줘야 함
-
+// API에서 받아오는 데이터 형식에 맞는 인터페이스
 interface Song {
-  id: string;
-  title: string;
-  artist: string;
-  albumCover: string;
-  duration: string;
+  trackId: string;
+  songName: string;
 }
 
 const SearchResultPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [searchInput, setSearchInput] = useState(searchParams.get('q') || '');
-  const [searchResults, setSearchResults] = useState<Song[]>([
-    {
-      id: '1',
-      title: "봄여름가을겨울",
-      artist: "빅뱅",
-      albumCover: firstCover,
-      duration: "3:37"
-    },
-    {
-      id: '2',
-      title: "내가 제일 잘 나가",
-      artist: "2NE1",
-      albumCover: secondCover,
-      duration: "3:26"
-    },
-    {
-      id: '3',
-      title: "LOVE DIVE",
-      artist: "IVE",
-      albumCover: thirdCover,
-      duration: "2:59"
-    },
-    {
-      id: '4',
-      title: "뱅뱅뱅",
-      artist: "빅뱅",
-      albumCover: fourthCover,
-      duration: "3:41"
-    },
-    {
-      id: '5',
-      title: "FIRE",
-      artist: "2NE1",
-      albumCover: fifthCover,
-      duration: "3:37"
-    },
-    {
-      id: '6',
-      title: "11:11",
-      artist: "태연",
-      albumCover: sixthCover,
-      duration: "3:29"
+  
+  // API 검색 결과 상태
+  const [searchResults, setSearchResults] = useState<Song[]>([]);
+  
+  // 페이지 로드시 location.state에서 검색 결과 가져오기
+  useEffect(() => {
+    if (location.state && location.state.searchResults) {
+      setSearchResults(location.state.searchResults);
     }
-  ]);
+  }, [location.state]);
 
   // DB 연동을 위한 데이터 페치 함수
   const fetchSearchResults = async (query: string) => {
@@ -112,20 +71,28 @@ const SearchResultPage = () => {
         </header>
 
         <div className="search-results">
-          {searchResults.map((song) => (
-            <div 
-              key={song.id} 
-              className="song-item"
-              onClick={() => navigate(`/song/${song.id}`, { state: { song } })}
-            >
-              <img src={song.albumCover} alt={`${song.title} 앨범커버`} className="album-cover" />
-              <div className="song-info">
-                <h3 className="song-title">{song.title}</h3>
-                <p className="song-artist">{song.artist}</p>
+          {searchResults.length > 0 ? (
+            searchResults.map((song) => (
+              <div 
+                key={song.trackId} 
+                className="song-item"
+                onClick={() => navigate(`/song/${song.trackId}`, { 
+                  state: { song: song } 
+                })}
+              >
+                <img src={firstCover} alt={`${song.songName} 앨범커버`} className="album-cover" />
+                <div className="song-info">
+                  <h3 className="song-title">{song.songName}</h3>
+                  <p className="song-artist">아티스트 정보 없음</p>
+                </div>
+                <span className="song-duration">-:--</span>
               </div>
-              <span className="song-duration">{song.duration}</span>
+            ))
+          ) : (
+            <div className="no-results">
+              검색 결과가 없습니다.
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>

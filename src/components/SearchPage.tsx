@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import './common.css';
 import './SearchPage.css';
 import backArrow from '../assets/back_space.svg'
+import firstCover from '../assets/1.jpg'; //임시 조치 , 나중에 api로 받아오면 바꿔줘야 함
 
 const SearchPage = () => {
-  const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState('');
+  const navigate = useNavigate();
   const [recentSearches] = useState(['에스파', "랜덤음악"]);
   const [suggestions] = useState([
     '뉴진스',
@@ -18,14 +19,55 @@ const SearchPage = () => {
     'BLACKPINK'
   ]);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (searchInput.trim()) {
-      navigate(`/search/results?q=${encodeURIComponent(searchInput)}`);
+      try {
+        // API 호출
+        const response = await fetch(`https://52.79.113.104:8443/api/songs/search?title=${encodeURIComponent(searchInput)}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`API 요청 실패: ${response.status} ${response.statusText}`, errorText);
+          throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // 검색 결과가 있으면 결과 페이지로 이동
+        if (data && data.length > 0) {
+          navigate(`/search/results?q=${encodeURIComponent(searchInput)}`, { 
+            state: { searchResults: data } 
+          });
+          console.log(data);
+        } else {
+          alert('검색 결과가 없습니다.');
+        }
+      } catch (error) {
+        console.error('검색 중 오류 발생:', error);
+        alert('검색 중 오류가 발생했습니다.');
+        
+      }
     }
+  };
+
+  // 추천 검색어 클릭 처리 함수 추가
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearchInput(suggestion);
+    // 검색어를 설정한 후 바로 검색 실행
+    setTimeout(() => handleSearch(), 10);
   };
 
   const handleBack = () => {
     navigate(-1);
+  };
+
+  const handleClear = () => {
+    setSearchInput('');
   };
 
   return (
@@ -42,14 +84,13 @@ const SearchPage = () => {
               className="search-input"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <button className="search-button" onClick={handleSearch}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </button>
+            {searchInput && (
+              <button className="clear-button" onClick={handleClear}>
+                ✕
+              </button>
+            )}
           </div>
         </header>
 
@@ -73,6 +114,7 @@ const SearchPage = () => {
             <button 
               key={index} 
               className={`suggestion-tag ${index === 0 || index === 2 ? 'active' : ''}`}
+              onClick={() => handleSuggestionClick(suggestion)}
             >
               {suggestion}
             </button>

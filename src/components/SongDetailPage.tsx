@@ -3,28 +3,42 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import './common.css';
 import './SongDetailPage.css';
 import backArrow from '../assets/back_space.svg';
+import firstCover from '../assets/1.jpg'; // 임시 앨범 커버 이미지
 
+// API 노래 데이터 인터페이스로 Song 재정의
 interface Song {
-  id: string;
-  title: string;
-  artist: string;
-  albumCover: string;
-  duration: string;
+  trackId: string;
+  songName: string;
 }
 
 const SongDetailPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation(); // 전달된 상태 가져오기
+  const { id } = useParams<{ id: string }>(); // URL에서 id 파라미터 가져오기
   const [message, setMessage] = useState('');
   
-  // 전달된 앨범 정보 사용
-  const songDetail: Song = state?.song || {
-    id: '1',
-    title: "Can't Control Myself",
-    artist: "태연",
-    albumCover: backArrow, // 기본값
-    duration: "3:37"
-  };
+  // 전달된 노래 정보 사용
+  const songDetail = (() => {
+    if (state?.song) {
+      // API 검색 결과로 전달된 경우
+      return {
+        id: state.song.trackId,
+        title: state.song.songName,
+        artist: "아티스트 정보 없음", // API에서 제공하지 않음
+        albumCover: firstCover, // 임시 이미지
+        duration: "-:--" // API에서 제공하지 않음
+      };
+    } else {
+      // 상태가 없는 경우 기본값
+      return {
+        id: id || '',
+        title: "알 수 없는 노래",
+        artist: "알 수 없는 아티스트",
+        albumCover: firstCover,
+        duration: "-:--"
+      };
+    }
+  })();
 
   const handleClearMessage = () => {
     setMessage('');
