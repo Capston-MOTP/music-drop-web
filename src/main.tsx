@@ -1,20 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import SearchPage from './components/SearchPage'
-import SearchResultPage from './components/SearchResultPage'
-import SongDetailPage from './components/SongDetailPage'
-import './index.css'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.tsx";
+import { BrowserRouter } from "react-router";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<SearchPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/search/results" element={<SearchResultPage />} />
-        <Route path="/song/:id" element={<SongDetailPage />} />
-      </Routes>
+      <App />
     </BrowserRouter>
-  </React.StrictMode>,
-)
+  </StrictMode>
+);
