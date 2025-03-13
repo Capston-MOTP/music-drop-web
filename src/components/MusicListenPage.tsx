@@ -8,7 +8,7 @@ const MusicListenPage = () => {
     <div className="mobile-container">
       <Header />
       <div className="content">
-        <div className="album-cover">
+        <div className="album-cover2">
           <img
             src="https://image.bugsm.co.kr/album/images/500/3220/322075.jpg"
             alt="Album Cover"
