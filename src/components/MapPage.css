@@ -1,0 +1,35 @@
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  overflow-x: hidden;
+}
+.marker {
+  position: relative;
+  width: 50px; /* Adjust size as needed */
+  height: 50px; /* Adjust size as needed */
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.marker img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.marker::after {
+  content: "";
+  position: absolute;
+  bottom: -10px; /* Adjust to position the point */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #fff; /* Marker point color */
+}

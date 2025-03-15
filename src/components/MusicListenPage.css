@@ -1,0 +1,122 @@
+.mobile-container {
+  max-width: 100%;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: #1a1a1a;
+}
+
+.header {
+  padding: 10px;
+  text-align: center;
+  background-color: #1e1e1e;
+  font-size: 14px;
+  color: #ccc;
+  border-bottom: 1px solid #333;
+}
+
+.content {
+  padding: 20px;
+}
+
+.album-cover {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.album-cover img {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.song-info {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.song-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #fff;
+}
+
+.artist {
+  font-size: 14px;
+  color: #ccc;
+}
+
+.memory {
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgb(30, 44, 50), rgb(26, 29, 32));
+}
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background-color: rgb(110, 244, 235);
+  font-weight: bold;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 15px;
+
+  display: inline-block;
+}
+
+.description {
+  text-align: left;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #fff;
+  line-height: 1.5;
+}
+
+.timestamp {
+  font-size: 12px;
+  text-align: right;
+  color: #aaa;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.play-now {
+  flex: 1;
+  background-color: rgb(26, 29, 32);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.likes {
+  font-size: 14px;
+  border-radius: 10px;
+  background-color: rgb(26, 29, 32);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  color: rgb(110, 244, 235);
+}

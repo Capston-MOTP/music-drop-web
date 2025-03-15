@@ -1,0 +1,23 @@
+.header {
+  padding: 10px;
+  text-align: center;
+  background-color: #1e1e1e;
+  font-size: 12px;
+  color: #fff;
+  border-bottom: 1px solid #333;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.back-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  width: 24px;
+}
+
+.location {
+  font-size: 18px;
+}
