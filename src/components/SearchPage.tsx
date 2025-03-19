@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./common.css";
 import "./SearchPage.css";
@@ -11,20 +11,65 @@ const AIIcon = () => (
   </svg>
 );
 
-const SearchPage = () => {
+const SearchPage = ({ lat, lon }: { lat?: number; lon?: number }) => {
   const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
   const [recentSearches] = useState(["에스파", "랜덤음악"]);
-  const [suggestions] = useState([
-    "뉴진스",
-    "아이유",
-    "르세라핌",
-    "에스파",
-    "폴킴",
-    "볼빨간사춘기",
-    "BLACKPINK",
-  ]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+
+  // 컴포넌트 마운트 시 추천 목록 가져오기
+  useEffect(() => {
+    fetchRecommendations();
+  }, [lat, lon]);
+
+  // 추천 목록 가져오는 함수
+  const fetchRecommendations = async () => {
+    setIsLoadingSuggestions(true);
+    try {
+      // 위치 정보가 없는 경우 기본값 사용
+      const latitude = lat || 33;
+      const longitude = lon || 124;
+      
+      const response = await fetch(
+        `https://52.79.113.104:8443/api/songs/recommend?lat=${latitude}&lon=${longitude}`,
+        {
+          method: "GET",
+          headers: {
+            "accept": "*/*",
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`API 요청 실패: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // 결과에서 artist 필드만 추출하여 중복 제거
+      if (data && Array.isArray(data)) {
+        const artists = data.map(item => item.artist).filter(Boolean);
+        const uniqueArtists = [...new Set(artists)];
+        setSuggestions(uniqueArtists);
+      }
+    } catch (error) {
+      console.error("추천 목록 가져오기 실패:", error);
+      // 오류 발생 시 기본 데이터 사용
+      setSuggestions([
+        "뉴진스",
+        "아이유",
+        "르세라핌",
+        "에스파",
+        "폴킴",
+        "볼빨간사춘기",
+        "BLACKPINK",
+      ]);
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
 
   const handleSearch = async () => {
     if (searchInput.trim()) {
@@ -154,15 +199,19 @@ const SearchPage = () => {
             </span>
           </div>
           <div className="suggestions-grid">
-            {suggestions.map((suggestion, index) => (
-              <button 
-                key={index} 
-                className={`suggestion-tag ${index === 0 || index === 2 ? 'active' : ''}`}
-                onClick={() => handleSuggestionClick(suggestion)}
-              >
-                {suggestion}
-              </button>
-            ))}
+            {isLoadingSuggestions ? (
+              <div className="loading-suggestions">로딩 중...</div>
+            ) : (
+              suggestions.map((suggestion, index) => (
+                <button 
+                  key={index} 
+                  className={`suggestion-tag ${index === 0 || index === 2 ? 'active' : ''}`}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                >
+                  {suggestion}
+                </button>
+              ))
+            )}
           </div>
         </div>
       </div>
