@@ -2,4 +2,7 @@
   from = "/api/*"
   to = "https://52.79.113.104:8443/api/:splat"
   status = 200
-  force = true 
+  force = true
+  headers = {
+    X-From = "Netlify"
+  } 
