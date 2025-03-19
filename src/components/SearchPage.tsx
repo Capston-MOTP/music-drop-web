@@ -6,15 +6,21 @@ import backArrow from "../assets/back_space.svg";
 
 // AI 아이콘 SVG 컴포넌트
 const AIIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width="16"
+    height="16"
+  >
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
   </svg>
 );
 
 const SearchPage = ({ lat, lon }: { lat?: number; lon?: number }) => {
   const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
-  const [recentSearches] = useState(["에스파", "랜덤음악"]);
+
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -31,14 +37,14 @@ const SearchPage = ({ lat, lon }: { lat?: number; lon?: number }) => {
       // 위치 정보가 없는 경우 기본값 사용
       const latitude = lat || 33;
       const longitude = lon || 124;
-      
+
       const response = await fetch(
         `https://52.79.113.104:8443/api/songs/recommend?lat=${latitude}&lon=${longitude}`,
         {
           method: "GET",
           headers: {
-            "accept": "*/*",
-          }
+            accept: "*/*",
+          },
         }
       );
 
@@ -47,10 +53,10 @@ const SearchPage = ({ lat, lon }: { lat?: number; lon?: number }) => {
       }
 
       const data = await response.json();
-      
+
       // 결과에서 artist 필드만 추출하여 중복 제거
       if (data && Array.isArray(data)) {
-        const artists = data.map(item => item.artist).filter(Boolean);
+        const artists = data.map((item) => item.artist).filter(Boolean);
         const uniqueArtists = [...new Set(artists)];
         setSuggestions(uniqueArtists);
       }
@@ -138,7 +144,11 @@ const SearchPage = ({ lat, lon }: { lat?: number; lon?: number }) => {
 
   // 툴팁 외부 클릭 시 닫기
   const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (showTooltip && e.target instanceof HTMLElement && !e.target.closest('.ai-badge')) {
+    if (
+      showTooltip &&
+      e.target instanceof HTMLElement &&
+      !e.target.closest(".ai-badge")
+    ) {
       setShowTooltip(false);
     }
   };
@@ -203,9 +213,11 @@ const SearchPage = ({ lat, lon }: { lat?: number; lon?: number }) => {
               <div className="loading-suggestions">로딩 중...</div>
             ) : (
               suggestions.map((suggestion, index) => (
-                <button 
-                  key={index} 
-                  className={`suggestion-tag ${index === 0 || index === 2 ? 'active' : ''}`}
+                <button
+                  key={index}
+                  className={`suggestion-tag ${
+                    index === 0 || index === 2 ? "active" : ""
+                  }`}
                   onClick={() => handleSuggestionClick(suggestion)}
                 >
                   {suggestion}
