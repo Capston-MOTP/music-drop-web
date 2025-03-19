@@ -1,11 +1,1 @@
-/api/*  https://52.79.113.104:8443/api/:splat  200!
-  Access-Control-Allow-Origin: *
-  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
-  Access-Control-Allow-Headers: Content-Type, Authorization
-  X-From: Netlify
-  Cache-Control: no-cache
-  X-Forwarded-Proto: https
-  X-Forwarded-Host: grand-horse-f40585.netlify.app
-  X-Forwarded-Port: 443
-  X-Forwarded-SSL: on
 /*  /index.html  200
