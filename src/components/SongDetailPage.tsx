@@ -324,7 +324,7 @@ const SongDetailPage = () => {
       };
     } else {
       return {
-        id: id || '',
+        id: id || "",
         title: "알 수 없는 노래",
         artist: "알 수 없는 아티스트",
         albumCover: "https://via.placeholder.com/300",
@@ -415,7 +415,9 @@ const SongDetailPage = () => {
             />
             <span className="character-count">{message.length}/100</span>
             {message && (
-              <button className="clear-button" onClick={handleClearMessage}>✕</button>
+              <button className="clear-button" onClick={handleClearMessage}>
+                ✕
+              </button>
             )}
           </div>
 
@@ -426,4 +428,4 @@ const SongDetailPage = () => {
   );
 };
 
-export default SongDetailPage; 
+export default SongDetailPage;

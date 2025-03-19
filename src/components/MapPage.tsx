@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { requestPermission } from "../utils/webviewBridge";
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../utils/api/client";
+import { useNavigate } from "react-router-dom";
 
 interface Position {
   lat: number;
@@ -31,6 +32,8 @@ const MapPage = () => {
     comment: string;
     albumCoverUrl: string;
   } | null>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!selectedMarker || selectedMarker.albumCoverUrl) return;
@@ -486,6 +489,7 @@ const MapPage = () => {
                 }}
               >
                 <img
+                  onClick={() => navigate("/listen")}
                   src={selectedMarker.albumCoverUrl || "placeholder-image-url"}
                   alt={selectedMarker.songName}
                   style={{
@@ -544,10 +548,9 @@ const MapPage = () => {
                   transition: "all 0.2s ease",
                 }}
                 onClick={() => {
-                  if (!isGpsActive) return;
-                  // TODO: 뮤직 드랍 기능 구현
+                  navigate("/search");
                 }}
-                disabled={!isGpsActive}
+                // disabled={!isGpsActive}
               >
                 뮤직 드랍하기
               </button>

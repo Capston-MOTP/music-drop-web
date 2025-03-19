@@ -8,9 +8,9 @@ const MusicListenPage = () => {
     <div className="mobile-container">
       <Header />
       <div className="content">
-        <div className="album-cover">
+        <div className="album-cover2">
           <img
-            src="https://i.namu.wiki/i/FTz5YpSqz6s6UidL2KsHnmkC6gwUchiHeFM4xae-0ZeOlBFqVKDov54HpL1r1WScWvhJOHi8aKqRkmeQERxBKeEwgeCdfD8x6BipFf-35JIGmG025rLuF7crFuwxv_YcU77pnhFcTVSwvXkHTq5wUg.webp"
+            src="https://image.bugsm.co.kr/album/images/500/3220/322075.jpg"
             alt="Album Cover"
           />
         </div>

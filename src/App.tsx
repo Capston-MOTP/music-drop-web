@@ -1,5 +1,5 @@
 import "./App.css";
-import { Route, Routes } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SearchPage from "./components/SearchPage";
 import MapPage from "./components/MapPage";
 import MusicListenPage from "./components/MusicListenPage";
@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <>
+    <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <Routes>
           <Route path="/" element={<MapPage />} />
@@ -21,7 +21,7 @@ function App() {
           <Route path="/song/:id" element={<SongDetailPage />} />
         </Routes>
       </QueryClientProvider>
-    </>
+    </BrowserRouter>
   );
 }
 

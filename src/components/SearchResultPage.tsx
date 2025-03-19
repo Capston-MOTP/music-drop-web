@@ -17,11 +17,11 @@ const SearchResultPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const [searchInput, setSearchInput] = useState(searchParams.get('q') || '');
-  
+  const [searchInput, setSearchInput] = useState(searchParams.get("q") || "");
+
   // API 검색 결과 상태
   const [searchResults, setSearchResults] = useState<Song[]>([]);
-  
+
   // 페이지 로드시 location.state에서 검색 결과 가져오기
   useEffect(() => {
     if (location.state && location.state.searchResults) {
@@ -56,7 +56,7 @@ const SearchResultPage = () => {
   };
 
   const handleClear = () => {
-    setSearchInput('');
+    setSearchInput("");
   };
 
   const handleSearch = () => {
@@ -86,13 +86,13 @@ const SearchResultPage = () => {
             <img src={backArrow} alt="뒤로가기" />
           </button>
           <div className="search-input-container">
-            <input 
-              type="text" 
-              placeholder="드랍할 음악 검색" 
+            <input
+              type="text"
+              placeholder="드랍할 음악 검색"
               className="search-input"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
             <button className="search-clear-button" onClick={handleClear}>
               ✕
@@ -117,9 +117,7 @@ const SearchResultPage = () => {
               </div>
             ))
           ) : (
-            <div className="no-results">
-              검색 결과가 없습니다.
-            </div>
+            <div className="no-results">검색 결과가 없습니다.</div>
           )}
         </div>
       </div>
@@ -127,4 +125,4 @@ const SearchResultPage = () => {
   );
 };
 
-export default SearchResultPage; 
+export default SearchResultPage;
