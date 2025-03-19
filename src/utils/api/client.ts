@@ -7,6 +7,10 @@ const apiClient = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
     "X-Requested-With": "XMLHttpRequest",
+    "Cache-Control": "no-cache",
+    Pragma: "no-cache",
+    "X-Forwarded-Host": "grand-horse-f40585.netlify.app",
+    "X-Forwarded-Proto": "https",
   },
 });
 

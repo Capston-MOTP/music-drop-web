@@ -8,4 +8,6 @@
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
     X-Forwarded-Host = "grand-horse-f40585.netlify.app"
-    X-Forwarded-Proto = "https" 
+    X-Forwarded-Proto = "https"
+    X-Forwarded-Path = "/api"
+    X-Original-URL = "/api/:splat" 
