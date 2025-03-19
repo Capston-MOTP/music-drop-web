@@ -1,14 +1,16 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
-import "./common.css";
-import "./SearchResultPage.css";
-import backArrow from "../assets/back_space.svg";
-import firstCover from "../assets/1.jpg"; // 임시 앨범 커버 이미지
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import './common.css';
+import './SearchResultPage.css';
+import backArrow from '../assets/back_space.svg'
 
 // API에서 받아오는 데이터 형식에 맞는 인터페이스
 interface Song {
   trackId: string;
   songName: string;
+  artist: string;
+  albumCover: string;
+  duration: string;
 }
 
 const SearchResultPage = () => {
@@ -24,19 +26,34 @@ const SearchResultPage = () => {
   useEffect(() => {
     if (location.state && location.state.searchResults) {
       setSearchResults(location.state.searchResults);
+      console.log("검색 결과 로드됨:", location.state.searchResults.length, "개");
+    } else if (searchInput) {
+      // location.state에 검색 결과가 없으면 API 호출
+      fetchSearchResults(searchInput);
     }
-  }, [location.state]);
+  }, [location.state, searchInput]);
 
-  // DB 연동을 위한 데이터 페치 함수
-  // const fetchSearchResults = async (_query: string) => {
-  //   try {
-  //     // const response = await fetch(`/api/search?q=${query}`);
-  //     // const data = await response.json();
-  //     // setSearchResults(data);
-  //   } catch (error) {
-  //     console.error('검색 결과를 불러오는데 실패했습니다:', error);
-  //   }
-  // };
+  // API 호출 함수
+  const fetchSearchResults = async (query: string) => {
+    try {
+      const response = await fetch(`https://52.79.113.104:8443/api/songs/search?title=${encodeURIComponent(query)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('API 요청 실패');
+      }
+      
+      const data = await response.json();
+      setSearchResults(data);
+      console.log("API 검색 결과:", data.length, "개");
+    } catch (error) {
+      console.error('검색 결과를 불러오는데 실패했습니다:', error);
+    }
+  };
 
   const handleClear = () => {
     setSearchInput("");
@@ -44,15 +61,28 @@ const SearchResultPage = () => {
 
   const handleSearch = () => {
     if (searchInput.trim()) {
-      navigate(`/search/results?q=${encodeURIComponent(searchInput)}`);
+      fetchSearchResults(searchInput);
     }
+  };
+  
+  // 노래 항목 클릭 처리 - 이제 모든 검색 결과와 현재 인덱스를 함께 전달
+  const handleSongClick = (song: Song, index: number) => {
+    console.log(`노래 클릭: ${song.songName}, 인덱스: ${index}`);
+    navigate(`/song/${song.trackId}`, { 
+      state: { 
+        song: song,              // 선택한 노래
+        results: searchResults,  // 전체 검색 결과 배열
+        currentIndex: index,     // 현재 선택한 노래의 인덱스
+        totalResults: searchResults.length  // 전체 결과 수
+      } 
+    });
   };
 
   return (
     <div className="mobile-container">
       <div className="search-result-container">
         <header className="search-header">
-          <button className="back-button" onClick={() => navigate(-1)}>
+          <button className="back-button" onClick={() => navigate('/search')}>
             <img src={backArrow} alt="뒤로가기" />
           </button>
           <div className="search-input-container">
@@ -72,26 +102,18 @@ const SearchResultPage = () => {
 
         <div className="search-results">
           {searchResults.length > 0 ? (
-            searchResults.map((song) => (
-              <div
-                key={song.trackId}
+            searchResults.map((song, index) => (
+              <div 
+                key={song.trackId} 
                 className="song-item"
-                onClick={() =>
-                  navigate(`/song/${song.trackId}`, {
-                    state: { song: song },
-                  })
-                }
+                onClick={() => handleSongClick(song, index)}
               >
-                <img
-                  src={firstCover}
-                  alt={`${song.songName} 앨범커버`}
-                  className="album-cover"
-                />
+                <img src={song.albumCover} alt={`${song.songName} 앨범커버`} className="album-cover" />
                 <div className="song-info">
                   <h3 className="song-title">{song.songName}</h3>
-                  <p className="song-artist">아티스트 정보 없음</p>
+                  <p className="song-artist">{song.artist}</p>
                 </div>
-                <span className="song-duration">-:--</span>
+                <span className="song-duration">{song.duration}</span>
               </div>
             ))
           ) : (
