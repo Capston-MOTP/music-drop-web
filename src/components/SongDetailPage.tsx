@@ -1,7 +1,14 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import "./common.css";
 import "./SongDetailPage.css";
+import apiClient from "../utils/api/client";
+import { useMutation } from "@tanstack/react-query";
 
 // API 노래 데이터 인터페이스로 Song 재정의
 interface Song {
@@ -22,6 +29,10 @@ const SongDetailPage = () => {
   const [, setTotalSongs] = useState(0);
   const [songList, setSongList] = useState<Song[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams] = useSearchParams();
+  const lat = searchParams.get("lat");
+  const lon = searchParams.get("lng");
+  console.log(lat, lon);
 
   // 스와이프 관련 상태
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -271,7 +282,7 @@ const SongDetailPage = () => {
       const prevIndex = currentIndex - 1;
       const prevSong = songList[prevIndex];
 
-      navigate(`/song/${prevSong.trackId}`, {
+      navigate(`/song/${prevSong.trackId}?lat=${lat}&lng=${lon}`, {
         state: {
           song: prevSong,
           results: songList,
@@ -292,7 +303,7 @@ const SongDetailPage = () => {
       const nextIndex = currentIndex + 1;
       const nextSong = songList[nextIndex];
 
-      navigate(`/song/${nextSong.trackId}`, {
+      navigate(`/song/${nextSong.trackId}?lat=${lat}&lng=${lon}`, {
         state: {
           song: nextSong,
           results: songList,
@@ -310,7 +321,7 @@ const SongDetailPage = () => {
   // 뒤로가기 버튼 처리
   const handleBack = () => {
     if (songList.length > 0) {
-      navigate("/search/results", {
+      navigate(`/search/results?lat=${lat}&lng=${lon}`, {
         state: {
           searchResults: songList,
           searchQuery: searchQuery,
@@ -326,6 +337,36 @@ const SongDetailPage = () => {
     setMessage("");
   };
 
+  const { mutate: dropSong } = useMutation({
+    mutationFn: async (body: {
+      trackId: string;
+      lat: number;
+      lon: number;
+      comment: string;
+    }) => {
+      await apiClient.post(
+        `/api/markers?trackId=${body.trackId}&lat=${body.lat}&lon=${body.lon}&comment=${body.comment}`
+      );
+    },
+  });
+  const onClickDrop = () => {
+    dropSong(
+      {
+        trackId: songDetail.id,
+        lat: Number(lat) || 37.3726,
+        lon: Number(lon) || 126.6352,
+        comment: message,
+      },
+      {
+        onSuccess: () => {
+          navigate("/");
+        },
+        onError: () => {
+          console.log("드랍하기 실패");
+        },
+      }
+    );
+  };
   // 전달된 노래 정보 사용
   const songDetail = (() => {
     if (state?.song) {
@@ -465,7 +506,9 @@ const SongDetailPage = () => {
             )}
           </div>
 
-          <button className="drop-button">드랍하기</button>
+          <button className="drop-button" onClick={onClickDrop}>
+            드랍하기
+          </button>
         </div>
       </div>
     </div>

@@ -548,7 +548,12 @@ const MapPage = () => {
                   transition: "all 0.2s ease",
                 }}
                 onClick={() => {
-                  navigate("/search");
+                  navigate(
+                    "/search?lat=" +
+                      (myPosition?.lat || 37.3726) +
+                      "&lng=" +
+                      (myPosition?.lng || 126.6352)
+                  );
                 }}
                 // disabled={!isGpsActive}
               >

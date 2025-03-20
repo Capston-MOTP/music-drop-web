@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "./common.css";
 import "./SearchPage.css";
 import backArrow from "../assets/back_space.svg";
@@ -17,9 +17,12 @@ const AIIcon = () => (
   </svg>
 );
 
-const SearchPage = ({ lat, lon }: { lat?: number; lon?: number }) => {
+const SearchPage = () => {
   const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const lat = searchParams.get("lat");
+  const lon = searchParams.get("lng");
 
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
@@ -108,9 +111,14 @@ const SearchPage = ({ lat, lon }: { lat?: number; lon?: number }) => {
 
         // 검색 결과가 있으면 결과 페이지로 이동
         if (data && data.length > 0) {
-          navigate(`/search/results?q=${encodeURIComponent(searchInput)}`, {
-            state: { searchResults: data },
-          });
+          navigate(
+            `/search/results?q=${encodeURIComponent(
+              searchInput
+            )}&lat=${lat}&lng=${lon}`,
+            {
+              state: { searchResults: data },
+            }
+          );
           console.log(data);
         } else {
           alert("검색 결과가 없습니다.");
