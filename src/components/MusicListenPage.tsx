@@ -2,23 +2,30 @@ import "./MusicListenPage.css";
 import { YTMusic } from "../assets";
 import Header from "./Header";
 import { FaHeart } from "react-icons/fa";
+import { useSearchParams } from "react-router-dom";
+import apiClient from "../utils/api/client";
+import { useQuery } from "@tanstack/react-query";
 
 const MusicListenPage = () => {
+  const [searchParams] = useSearchParams();
+  const trackId = searchParams.get("trackId");
+  const { data } = useQuery({
+    queryKey: ["listen", trackId],
+    queryFn: () => apiClient.get(`/api/songs/${trackId}`),
+  });
+
   return (
     <div className="mobile-container">
       <Header />
       <div className="content">
         <div className="album-cover2">
-          <img
-            src="https://image.bugsm.co.kr/album/images/500/3220/322075.jpg"
-            alt="Album Cover"
-          />
+          <img src={data?.data.albumCoverUrl} alt="Album Cover" />
         </div>
         <div className="song-info">
-          <div className="song-title">Can't Control Myself</div>
-          <p className="artist">taeyeon</p>
+          <div className="song-title">{data?.data.songName}</div>
+          <p className="artist">{data?.data.artistName}</p>
         </div>
-        <div className="memory">
+        {/* <div className="memory">
           <div className="tags-container">
             <span className="tag">케이팝</span>
             <span className="tag">발라드</span>
@@ -27,9 +34,14 @@ const MusicListenPage = () => {
             친구랑 공원에서 같이 이어폰 끼고 노래 들었던 게 추억이네요!
           </p>
           <div className="timestamp">23.07.22</div>
-        </div>
+        </div> */}
         <div className="actions">
-          <button className="play-now">
+          <button
+            className="play-now"
+            onClick={() => {
+              window.open(data?.data.X, "_blank");
+            }}
+          >
             <img
               src={YTMusic}
               style={{

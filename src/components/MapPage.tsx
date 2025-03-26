@@ -489,7 +489,9 @@ const MapPage = () => {
                 }}
               >
                 <img
-                  onClick={() => navigate("/listen")}
+                  onClick={() =>
+                    navigate("/listen?trackId=" + selectedMarker.trackId)
+                  }
                   src={selectedMarker.albumCoverUrl || "placeholder-image-url"}
                   alt={selectedMarker.songName}
                   style={{
