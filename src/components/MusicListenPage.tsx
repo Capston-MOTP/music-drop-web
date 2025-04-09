@@ -25,21 +25,12 @@ const MusicListenPage = () => {
           <div className="song-title">{data?.data.songName}</div>
           <p className="artist">{data?.data.artistName}</p>
         </div>
-        {/* <div className="memory">
-          <div className="tags-container">
-            <span className="tag">케이팝</span>
-            <span className="tag">발라드</span>
-          </div>
-          <p className="description">
-            친구랑 공원에서 같이 이어폰 끼고 노래 들었던 게 추억이네요!
-          </p>
-          <div className="timestamp">23.07.22</div>
-        </div> */}
+
         <div className="actions">
           <button
             className="play-now"
             onClick={() => {
-              window.open(data?.data.X, "_blank");
+              window.open(data?.data.youtubeLink, "_blank");
             }}
           >
             <img
