@@ -1,10 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "./common.css";
 import "./SearchPage.css";
 import backArrow from "../assets/back_space.svg";
 import { AILoading } from "../assets";
 import Lottie from "react-lottie";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import apiClient from "../utils/api/client";
+
+// API 함수들
+const searchSongs = async (title: string) => {
+  const response = await apiClient.get(
+    `/api/songs/search?title=${encodeURIComponent(title)}`
+  );
+  return response.data;
+};
+
+const getRecommendations = async (lat: number, lon: number) => {
+  const response = await apiClient.get(
+    `/api/songs/recommend?lat=${lat}&lon=${lon}`
+  );
+  return response.data;
+};
 
 // AI 아이콘 SVG 컴포넌트
 const AIIcon = () => (
@@ -26,49 +43,17 @@ const SearchPage = () => {
   const lat = searchParams.get("lat");
   const lon = searchParams.get("lng");
 
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
 
-  // 컴포넌트 마운트 시 추천 목록 가져오기
-  useEffect(() => {
-    fetchRecommendations();
-  }, [lat, lon]);
-
-  // 추천 목록 가져오는 함수
-  const fetchRecommendations = async () => {
-    setIsLoadingSuggestions(true);
-    try {
-      // 위치 정보가 없는 경우 기본값 사용
-      const latitude = lat || 33;
-      const longitude = lon || 124;
-
-      const response = await fetch(
-        `https://52.79.113.104:8443/api/songs/recommend?lat=${latitude}&lon=${longitude}`,
-        {
-          method: "GET",
-          headers: {
-            accept: "*/*",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`API 요청 실패: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      // 결과에서 artist 필드만 추출하여 중복 제거
+  const { data: recommendations, isLoading: isLoadingSuggestions } = useQuery({
+    queryKey: ["recommendations", lat, lon],
+    queryFn: () => getRecommendations(Number(lat) || 33, Number(lon) || 124),
+    select: (data) => {
       if (data && Array.isArray(data)) {
         const artists = data.map((item) => item.artist).filter(Boolean);
-        const uniqueArtists = [...new Set(artists)];
-        setSuggestions(uniqueArtists);
+        return [...new Set(artists)];
       }
-    } catch (error) {
-      console.error("추천 목록 가져오기 실패:", error);
-      // 오류 발생 시 기본 데이터 사용
-      setSuggestions([
+      return [
         "뉴진스",
         "아이유",
         "르세라핌",
@@ -76,59 +61,36 @@ const SearchPage = () => {
         "폴킴",
         "볼빨간사춘기",
         "BLACKPINK",
-      ]);
-    } finally {
-      setIsLoadingSuggestions(false);
-    }
-  };
+      ];
+    },
+  });
+
+  const searchMutation = useMutation({
+    mutationFn: searchSongs,
+    onSuccess: (data) => {
+      if (data && data.length > 0) {
+        navigate(
+          `/search/results?q=${encodeURIComponent(
+            searchInput
+          )}&lat=${lat}&lng=${lon}`,
+          {
+            state: { searchResults: data },
+          }
+        );
+        console.log(data);
+      } else {
+        alert("검색 결과가 없습니다.");
+      }
+    },
+    onError: (error) => {
+      console.error("검색 중 오류 발생:", error);
+      alert("검색 중 오류가 발생했습니다.");
+    },
+  });
 
   const handleSearch = async () => {
     if (searchInput.trim()) {
-      try {
-        // API 호출
-        const response = await fetch(
-          `https://52.79.113.104:8443/api/songs/search?title=${encodeURIComponent(
-            searchInput
-          )}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(
-            `API 요청 실패: ${response.status} ${response.statusText}`,
-            errorText
-          );
-          throw new Error(
-            `API 요청 실패: ${response.status} ${response.statusText}`
-          );
-        }
-
-        const data = await response.json();
-
-        // 검색 결과가 있으면 결과 페이지로 이동
-        if (data && data.length > 0) {
-          navigate(
-            `/search/results?q=${encodeURIComponent(
-              searchInput
-            )}&lat=${lat}&lng=${lon}`,
-            {
-              state: { searchResults: data },
-            }
-          );
-          console.log(data);
-        } else {
-          alert("검색 결과가 없습니다.");
-        }
-      } catch (error) {
-        console.error("검색 중 오류 발생:", error);
-        alert("검색 중 오류가 발생했습니다.");
-      }
+      searchMutation.mutate(searchInput);
     }
   };
 
@@ -229,7 +191,7 @@ const SearchPage = () => {
             </div>
           ) : (
             <div className="suggestions-grid">
-              {suggestions.map((suggestion, index) => (
+              {recommendations?.map((suggestion, index) => (
                 <button
                   key={index}
                   className={`suggestion-tag ${
