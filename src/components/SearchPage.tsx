@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import "./common.css";
 import "./SearchPage.css";
 import backArrow from "../assets/back_space.svg";
+import { AILoading } from "../assets";
+import Lottie from "react-lottie";
 
 // AI 아이콘 SVG 컴포넌트
 const AIIcon = () => (
@@ -216,11 +218,18 @@ const SearchPage = () => {
               )}
             </span>
           </div>
-          <div className="suggestions-grid">
-            {isLoadingSuggestions ? (
-              <div className="loading-suggestions">로딩 중...</div>
-            ) : (
-              suggestions.map((suggestion, index) => (
+          {isLoadingSuggestions ? (
+            <div className="loading-suggestions">
+              <Lottie
+                options={{
+                  loop: true,
+                  animationData: AILoading,
+                }}
+              />
+            </div>
+          ) : (
+            <div className="suggestions-grid">
+              {suggestions.map((suggestion, index) => (
                 <button
                   key={index}
                   className={`suggestion-tag ${
@@ -230,9 +239,9 @@ const SearchPage = () => {
                 >
                   {suggestion}
                 </button>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

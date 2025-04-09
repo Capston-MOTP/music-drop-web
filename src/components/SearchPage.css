@@ -1,4 +1,5 @@
-body, #root {
+body,
+#root {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -25,7 +26,8 @@ body, #root {
 }
 
 /* 공통 컨테이너 스타일 */
-.search-container, .search-result-container {
+.search-container,
+.search-result-container {
   padding: 16px;
   background-color: #000;
   min-height: 100vh;
@@ -88,7 +90,8 @@ body, #root {
 }
 
 /* 공통 clear 버튼 스타일 */
-.clear-button, .search-clear-button {
+.clear-button,
+.search-clear-button {
   background: none;
   border: none;
   color: #808080;
@@ -107,7 +110,8 @@ body, #root {
   z-index: 2; */
 }
 
-.clear-button:hover, .search-clear-button:hover {
+.clear-button:hover,
+.search-clear-button:hover {
   color: #fff;
 }
 
@@ -149,7 +153,7 @@ body, #root {
 }
 
 .highlight {
-  color: #2DD4BF;
+  color: #2dd4bf;
 }
 
 .suggestions-container {
@@ -179,7 +183,7 @@ body, #root {
   display: inline-flex;
   align-items: center;
   background-color: rgba(45, 212, 191, 0.1);
-  color: #2DD4BF;
+  color: #2dd4bf;
   padding: 3px 8px;
   border-radius: 12px;
   font-size: 12px;
@@ -214,8 +218,15 @@ body, #root {
   transition: all 0.2s ease;
 }
 
+.loading-suggestions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 250px;
+}
+
 .suggestion-tag.active {
-  background-color: #2DD4BF;
+  background-color: #2dd4bf;
   color: black;
   box-shadow: 0 2px 8px rgba(45, 212, 191, 0.3);
 }
@@ -297,7 +308,7 @@ body, #root {
 .ai-recommendation-label {
   position: relative;
   background-color: rgba(45, 212, 191, 0.1);
-  color: #2DD4BF;
+  color: #2dd4bf;
   padding: 5px 12px;
   border-radius: 16px;
   font-size: 14px;
@@ -308,7 +319,7 @@ body, #root {
 }
 
 .ai-recommendation-label:after {
-  content: '?';
+  content: "?";
   display: inline-block;
   margin-left: 6px;
   font-size: 12px;
@@ -337,7 +348,7 @@ body, #root {
 }
 
 .ai-tooltip:before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: -6px;
@@ -348,4 +359,3 @@ body, #root {
   border-bottom: 6px solid transparent;
   border-right: 6px solid rgba(0, 0, 0, 0.8);
 }
-
