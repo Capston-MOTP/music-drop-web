@@ -120,3 +120,35 @@
   font-weight: bold;
   color: rgb(110, 244, 235);
 }
+
+.comment-section {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  width: 100%;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.comment-icon {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.comment-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.comment-content {
+  font-size: 14px;
+  color: #e0e0e0;
+  line-height: 1.5;
+  word-break: break-word;
+}
