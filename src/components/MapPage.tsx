@@ -457,7 +457,7 @@ const MapPage = () => {
                     color: "#2b2b2b",
                     position: "relative",
                     fontWeight: 600,
-                    whiteSpace: "nowrap",
+                    whiteSpace: "break-spaces",
                     textOverflow: "ellipsis",
                     padding: "4px 8px",
                     backgroundColor: "#abfbff",
