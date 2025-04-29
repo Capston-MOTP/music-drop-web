@@ -14,6 +14,18 @@ const formatDate = (dateString: string) => {
   )}.${String(date.getDate()).padStart(2, "0")}`;
 };
 
+// 마커 데이터 타입 정의
+interface MarkerData {
+  data: {
+    id: string;
+    comment: string;
+    dropDate: string;
+    releaseDate: string;
+    likes: number;
+    [key: string]: unknown; // 다른 필드들도 있을 수 있으므로 인덱스 시그니처 추가
+  };
+}
+
 const MusicListenPage = () => {
   const [searchParams] = useSearchParams();
   const trackId = searchParams.get("trackId");
@@ -22,7 +34,7 @@ const MusicListenPage = () => {
     queryKey: ["listen", trackId, markerId],
     queryFn: () => apiClient.get(`/api/songs/${trackId}`),
   });
-  const { data: markerData } = useQuery({
+  const { data: markerData } = useQuery<MarkerData>({
     queryKey: ["marker", markerId],
     queryFn: () => apiClient.get(`/api/markers/${markerId}/detail`),
   });
@@ -31,7 +43,42 @@ const MusicListenPage = () => {
 
   const { mutate: likeMarker } = useMutation({
     mutationFn: () => apiClient.patch(`/api/markers/${markerId}/likes`),
-    onSuccess: () => {
+    onMutate: async () => {
+      // 이전 쿼리 데이터를 캐시에서 취소
+      await queryClient.cancelQueries({ queryKey: ["marker", markerId] });
+
+      // 이전 데이터를 저장
+      const previousMarkerData = queryClient.getQueryData<MarkerData>([
+        "marker",
+        markerId,
+      ]);
+
+      // 낙관적으로 데이터 업데이트
+      queryClient.setQueryData<MarkerData>(["marker", markerId], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: {
+            ...old.data,
+            likes: (old.data.likes || 0) + 1,
+          },
+        };
+      });
+
+      // 이전 데이터를 반환하여 롤백에 사용
+      return { previousMarkerData };
+    },
+    onError: (_err, _variables, context) => {
+      // 에러 발생 시 이전 데이터로 롤백
+      if (context?.previousMarkerData) {
+        queryClient.setQueryData(
+          ["marker", markerId],
+          context.previousMarkerData
+        );
+      }
+    },
+    onSettled: () => {
+      // 성공 또는 실패 후 쿼리를 다시 가져옴
       queryClient.invalidateQueries({ queryKey: ["marker", markerId] });
     },
   });
