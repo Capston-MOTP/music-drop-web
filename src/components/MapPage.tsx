@@ -1,4 +1,9 @@
-import { CustomOverlayMap, Map, useKakaoLoader } from "react-kakao-maps-sdk";
+import {
+  CustomOverlayMap,
+  Map,
+  MarkerClusterer,
+  useKakaoLoader,
+} from "react-kakao-maps-sdk";
 import SvgIconLocationActive40 from "../assets/icons/locationActive";
 import SvgIconLocation40 from "../assets/icons/IocationInactive";
 import { useEffect, useRef, useState } from "react";
@@ -16,7 +21,7 @@ interface Position {
 const MapPage = () => {
   useKakaoLoader({
     appkey: "1439a0da769c13dde3cf12b07193dbdc",
-    libraries: ["services"],
+    libraries: ["services", "clusterer"],
   });
   const mapRef = useRef<kakao.maps.Map>(null);
   const [center] = useState<Position>({
@@ -52,6 +57,16 @@ const MapPage = () => {
     };
     fetchTrack();
   }, [selectedMarker]);
+
+  // const { mutate: dropMusic } = useMutation({
+  //   mutationFn: () => {
+  //     return apiClient.delete("/api/markers/14");
+  //   },
+  // });
+
+  // useEffect(() => {
+  //   dropMusic();
+  // }, []);
 
   const [isGpsActive, setIsGpsActive] = useState(false);
   const [myPosition, setMyPosition] = useState<Position | null>(null);
@@ -233,88 +248,90 @@ const MapPage = () => {
           handleIdle();
         }}
       >
-        {markerList &&
-          markerList.data.map((data) => (
-            <CustomOverlayMap
-              position={{ lat: data.latitude, lng: data.longitude }}
-              key={data.id}
-            >
-              <div
-                style={{
-                  width: selectedMarker?.id === data.id ? "32px" : "24px",
-                  height: selectedMarker?.id === data.id ? "32px" : "24px",
-                  borderRadius: "100%",
-                  overflow: "hidden",
-                  border: `2px solid ${
-                    selectedMarker?.id === data.id ? "#191919" : "#ffffff"
-                  }`,
-                  zIndex: selectedMarker?.id === data.id ? 101 : 100,
-                  background:
-                    selectedMarker?.id === data.id
-                      ? "linear-gradient(180deg, #ffffff 0%, #abfbff 100%)"
-                      : "#abfbff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transform: `scale(${
-                    selectedMarker?.id === data.id ? 1.1 : 1
-                  })`,
-                  transition: "all 0.2s ease",
-                  cursor: "pointer",
-                  boxShadow:
-                    selectedMarker?.id === data.id
-                      ? "0 2px 8px rgba(0,0,0,0.1)"
-                      : "none",
-                }}
-                onClick={() => {
-                  setSelectedMarker({
-                    id: data.id,
-                    latitude: data.latitude,
-                    longitude: data.longitude,
-                    songName: data.songName,
-                    trackId: data.trackId,
-                    comment: data.comment,
-                    albumCoverUrl: "",
-                  });
-                }}
+        <MarkerClusterer averageCenter={true} minLevel={10}>
+          {markerList &&
+            markerList.data.map((data) => (
+              <CustomOverlayMap
+                position={{ lat: data.latitude, lng: data.longitude }}
+                key={data.id}
               >
-                <svg
-                  width={selectedMarker?.id === data.id ? "16" : "12"}
-                  height={selectedMarker?.id === data.id ? "16" : "12"}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+                <div
+                  style={{
+                    width: selectedMarker?.id === data.id ? "32px" : "24px",
+                    height: selectedMarker?.id === data.id ? "32px" : "24px",
+                    borderRadius: "100%",
+                    overflow: "hidden",
+                    border: `2px solid ${
+                      selectedMarker?.id === data.id ? "#191919" : "#ffffff"
+                    }`,
+                    zIndex: selectedMarker?.id === data.id ? 101 : 100,
+                    background:
+                      selectedMarker?.id === data.id
+                        ? "linear-gradient(180deg, #ffffff 0%, #abfbff 100%)"
+                        : "#abfbff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transform: `scale(${
+                      selectedMarker?.id === data.id ? 1.1 : 1
+                    })`,
+                    transition: "all 0.2s ease",
+                    cursor: "pointer",
+                    boxShadow:
+                      selectedMarker?.id === data.id
+                        ? "0 2px 8px rgba(0,0,0,0.1)"
+                        : "none",
+                  }}
+                  onClick={() => {
+                    setSelectedMarker({
+                      id: data.id,
+                      latitude: data.latitude,
+                      longitude: data.longitude,
+                      songName: data.songName,
+                      trackId: data.trackId,
+                      comment: data.comment,
+                      albumCoverUrl: "",
+                    });
+                  }}
                 >
-                  <path
-                    d="M8 18.85C8 20.59 9.28 22 10.85 22C12.42 22 13.7 20.59 13.7 18.85C13.7 17.11 12.42 15.7 10.85 15.7C9.28 15.7 8 17.11 8 18.85Z"
-                    fill="#2b2b2b"
-                  />
-                  <path
-                    d="M13.7 18.85V4C13.7 3.45 14.15 3 14.7 3C14.92 3 15.13 3.08 15.3 3.22L19.7 6.9"
-                    stroke="#2b2b2b"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
-              <div
-                style={{
-                  width: 0,
-                  height: 0,
-                  borderLeft: "6px solid transparent",
-                  borderRight: "6px solid transparent",
-                  borderTop: `6px solid ${
-                    selectedMarker?.id === data.id ? "#191919" : "#ffffff"
-                  }`,
-                  position: "absolute",
-                  left: "50%",
-                  bottom: selectedMarker?.id === data.id ? "-6px" : "-4px",
-                  transform: "translateX(-50%)",
-                  zIndex: selectedMarker?.id === data.id ? 101 : 99,
-                }}
-              />
-            </CustomOverlayMap>
-          ))}
+                  <svg
+                    width={selectedMarker?.id === data.id ? "16" : "12"}
+                    height={selectedMarker?.id === data.id ? "16" : "12"}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 18.85C8 20.59 9.28 22 10.85 22C12.42 22 13.7 20.59 13.7 18.85C13.7 17.11 12.42 15.7 10.85 15.7C9.28 15.7 8 17.11 8 18.85Z"
+                      fill="#2b2b2b"
+                    />
+                    <path
+                      d="M13.7 18.85V4C13.7 3.45 14.15 3 14.7 3C14.92 3 15.13 3.08 15.3 3.22L19.7 6.9"
+                      stroke="#2b2b2b"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </div>
+                <div
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: "6px solid transparent",
+                    borderRight: "6px solid transparent",
+                    borderTop: `6px solid ${
+                      selectedMarker?.id === data.id ? "#191919" : "#ffffff"
+                    }`,
+                    position: "absolute",
+                    left: "50%",
+                    bottom: selectedMarker?.id === data.id ? "-6px" : "-4px",
+                    transform: "translateX(-50%)",
+                    zIndex: selectedMarker?.id === data.id ? 101 : 99,
+                  }}
+                />
+              </CustomOverlayMap>
+            ))}
+        </MarkerClusterer>
         {myPosition && (
           <CustomOverlayMap position={myPosition}>
             <div style={{ position: "relative" }}>
